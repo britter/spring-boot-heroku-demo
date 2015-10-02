@@ -16,10 +16,31 @@
 -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>Spring Boot Heroku Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<p th:text="'Hello, World!'" />
+<h1>Spring Boot Heroku Example</h1>
+
+<form th:object="${insertRecord}" method="POST">
+    Record to insert:<input id="data" type="text" th:field="*{data}" />
+    <span th:if="${#fields.hasErrors('data')}" th:errors="*{data}"></span>
+    <br />
+    <input type="submit" id="borrowBook" value="Borrow Book" />
+</form>
+
+<hr />
+<table>
+    <thead>
+        <tr>
+            <td>Records</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="record : ${records}">
+            <td th:text="${record.data}">Some text</td>
+        </tr>
+    </tbody>
+</table>
 </body>
 </html>
