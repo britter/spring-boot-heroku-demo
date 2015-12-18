@@ -62,11 +62,31 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <scm>
+        <url>https://github.com/britter/spring-boot-heroku-demo</url>
+        <connection>scm:git:git://github.com/britter/spring-boot-heroku-demo.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/britter/spring-boot-heroku-demo.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
