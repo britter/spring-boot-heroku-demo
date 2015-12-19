@@ -60,6 +60,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <github.commit.link>${project.scm.url}/commit/${buildNumber}</github.commit.link>
     </properties>
 
     <scm>
