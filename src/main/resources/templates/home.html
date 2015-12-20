@@ -29,7 +29,7 @@
     <div class="page-header">
         <h1>Spring Boot Heroku Example</h1>
         <p class="lead">Demo application for showing how to run a <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> application on <a href="https://heroku.com">Heroku</a>.</p>
-        <p>The code is open source at <a href="https://github.com/britter/spring-boot-heroku-demo">GitHub</a>. You're currently looking at version <a href="https://github.com" th:href="#{github.commit.link}" th:text="#{git.commit.hash}">1bb7244</a>. For more information have a look at the <a href="https://blog.codecentric.de/en/2015/10/deploying-spring-boot-applications-to-heroku">accompanying blog post</a>.</p>
+        <p>The code is open source at <a href="https://github.com/britter/spring-boot-heroku-demo">GitHub</a>. You're currently looking at version <a href="https://github.com" th:href="#{github.commit.link}" th:text="${#strings.substring('__#{git.commit.hash}__', 0, 7)}">1bb7244</a>. For more information have a look at the <a href="https://blog.codecentric.de/en/2015/10/deploying-spring-boot-applications-to-heroku">accompanying blog post</a>.</p>
     </div>
 
     <div class="row">
