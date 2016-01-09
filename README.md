@@ -1,5 +1,7 @@
 # spring-boot-heroku-demo
 
+[![Build Status](https://travis-ci.org/britter/spring-boot-heroku-demo.svg?branch=master)](https://travis-ci.org/britter/spring-boot-heroku-demo)
+[![Coverage Status](https://coveralls.io/repos/britter/spring-boot-heroku-demo/badge.svg?branch=master&service=github)](https://coveralls.io/github/britter/spring-boot-heroku-demo?branch=master)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 This is a small demo application for showing how to run a [Spring Boot](http://projects.spring.io/spring-boot/)
