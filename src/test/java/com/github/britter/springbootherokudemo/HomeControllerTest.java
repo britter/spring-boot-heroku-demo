@@ -27,10 +27,13 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.ui.ModelMap;
 
+@RunWith(HierarchicalContextRunner.class)
 public class HomeControllerTest {
 
     private ModelMap map;
@@ -44,36 +47,40 @@ public class HomeControllerTest {
         ctrl = new HomeController(repository);
     }
 
-    @Test
-    public void shouldAddInsertRecordToModelMap_whenCallingHome() throws Exception {
-        ctrl.home(map);
+    public class Home {
 
-        assertThat(map, hasKey("insertRecord"));
-        assertTrue(map.get("insertRecord") instanceof Record);
+        @Test
+        public void shouldAddInsertRecordToModelMap() throws Exception {
+            ctrl.home(map);
+
+            assertThat(map, hasKey("insertRecord"));
+            assertTrue(map.get("insertRecord") instanceof Record);
+        }
+
+        @Test
+        public void shouldQueryRepositoryForAllRecords() throws Exception {
+            ctrl.home(map);
+
+            verify(repository, only()).findAll();
+        }
+
+        @Test
+        public void shouldAddRecordsFromRepositoryToModelMap() throws Exception {
+            when(repository.findAll()).thenReturn(Arrays.asList(new Record(), new Record(), new Record()));
+
+            ctrl.home(map);
+
+            assertThat(map, hasKey("records"));
+            assertTrue(map.get("records") instanceof List);
+
+            List<Record> records = getRecords();
+            assertThat(records, hasSize(3));
+        }
+
+        @SuppressWarnings("unchecked")
+        private List<Record> getRecords() {
+            return (List<Record>) map.get("records");
+        }
     }
 
-    @Test
-    public void shouldQueryRepositoryForAllRecords_whenCallingHome() throws Exception {
-        ctrl.home(map);
-
-        verify(repository, only()).findAll();
-    }
-
-    @Test
-    public void shouldAddRecordsFromRepositoryToModelMap_whenCallingHome() throws Exception {
-        when(repository.findAll()).thenReturn(Arrays.asList(new Record(), new Record(), new Record()));
-
-        ctrl.home(map);
-
-        assertThat(map, hasKey("records"));
-        assertTrue(map.get("records") instanceof List);
-
-        List<Record> records = getRecords();
-        assertThat(records, hasSize(3));
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Record> getRecords() {
-        return (List<Record>) map.get("records");
-    }
 }
