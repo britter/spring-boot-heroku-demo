@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -63,6 +64,9 @@ public class HomeControllerTest {
 
             assertThat(map, hasKey("insertRecord"));
             assertTrue(map.get("insertRecord") instanceof Record);
+
+            Record insertRecord = (Record) map.get("insertRecord");
+            assertNull(insertRecord.getData());
         }
 
         @Test
