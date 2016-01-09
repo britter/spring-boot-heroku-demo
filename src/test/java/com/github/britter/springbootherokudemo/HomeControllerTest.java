@@ -16,9 +16,16 @@
 package com.github.britter.springbootherokudemo;
 
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -43,5 +50,30 @@ public class HomeControllerTest {
 
         assertThat(map, hasKey("insertRecord"));
         assertTrue(map.get("insertRecord") instanceof Record);
+    }
+
+    @Test
+    public void shouldQueryRepositoryForAllRecords_whenCallingHome() throws Exception {
+        ctrl.home(map);
+
+        verify(repository, only()).findAll();
+    }
+
+    @Test
+    public void shouldAddRecordsFromRepositoryToModelMap_whenCallingHome() throws Exception {
+        when(repository.findAll()).thenReturn(Arrays.asList(new Record(), new Record(), new Record()));
+
+        ctrl.home(map);
+
+        assertThat(map, hasKey("records"));
+        assertTrue(map.get("records") instanceof List);
+
+        List<Record> records = getRecords();
+        assertThat(records, hasSize(3));
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Record> getRecords() {
+        return (List<Record>) map.get("records");
     }
 }
