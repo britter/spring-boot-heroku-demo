@@ -62,7 +62,7 @@ public class HomeControllerTest {
         public void shouldAddInsertRecordToModelMap() throws Exception {
             ctrl.home(map);
 
-            assertThat(map, hasKey("insertRecord"));
+            assertThat(map, hasKey("insertRecords"));
             assertTrue(map.get("insertRecord") instanceof Record);
 
             Record insertRecord = (Record) map.get("insertRecord");
