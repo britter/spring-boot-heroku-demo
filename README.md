@@ -7,7 +7,7 @@
 This is a small demo application for showing how to run a [Spring Boot](http://projects.spring.io/spring-boot/)
 application on [Heroku](http://heroku.com). For more information have a look at the
 [accompanying blog post](https://blog.codecentric.de/en/2015/10/deploying-spring-boot-applications-to-heroku).
-You can test the application [here](spring-boot-heroku-demo.herokuapp.com). Note that it is only running on a
+You can test the application [here](http://spring-boot-heroku-demo.herokuapp.com). Note that it is only running on a
 [free dyno](https://www.heroku.com/pricing), so it may take some time before it responds.
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
