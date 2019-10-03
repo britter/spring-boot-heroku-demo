@@ -5,4 +5,4 @@ jdk:
   - openjdk11
 
 after_success:
-  - mvn jacoco:report coveralls:report
+  - ./gradlew jacocoTestReport coveralls

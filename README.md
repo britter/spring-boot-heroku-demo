@@ -16,7 +16,7 @@ You can test the application [here](http://spring-boot-heroku-demo.herokuapp.com
 
 To run the application from your IDE, simply run the `com.github.britter.springbootherokudemo.Application` class as
 a Java Application.
-Alternatively the application can be started from the terminal using maven with `mvn spring-boot:run`.
+Alternatively the application can be started from the terminal using [gradle](https://gradle.org) with `./gradlew bootRun`.
 After starting the application, point your browser to http://localhost:8080.
 
 ## Using a Postgres database for persistence

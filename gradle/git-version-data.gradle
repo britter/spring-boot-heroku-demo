@@ -1,0 +1,7 @@
+if(System.getenv("CI")) {
+    project.ext.gitCommitHash = "git rev-parse --verify HEAD".execute().text
+} else {
+    project.ext.gitCommitHash = System.getenv("SOURCE_VERSION") ?: "abcdefgh"
+}
+
+project.ext.gitCommitLink = "https://github.com/britter/spring-boot-heroku-demo/commit/$project.gitCommitHash"
