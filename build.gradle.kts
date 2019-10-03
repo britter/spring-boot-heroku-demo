@@ -7,7 +7,7 @@ plugins {
 apply(from = "gradle/git-version-data.gradle")
 
 group = "com.github.britter"
-version = "0.2.7"
+version = "0.2.8"
 
 repositories {
     mavenCentral()
