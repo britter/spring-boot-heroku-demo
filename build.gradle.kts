@@ -25,10 +25,11 @@ dependencies {
 
     testImplementation(platform("org.springframework.boot:spring-boot-dependencies:2.1.8.RELEASE"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("junit:junit:4.12")
-    testImplementation("de.bechte.junit:junit-hierarchicalcontextrunner:4.12.1")
-    testImplementation("org.hamcrest:hamcrest-all:1.3")
-    testImplementation("org.mockito:mockito-all:2.0.2-beta")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+    testImplementation("org.assertj:assertj-core:3.13.2")
+    testImplementation("org.mockito:mockito-core:3.1.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:3.1.0")
 }
 
 java {
@@ -45,6 +46,10 @@ tasks {
 
     compileJava {
         options.encoding = "UTF-8"
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     val jacocoTestReport = named<JacocoReport>("jacocoTestReport") {

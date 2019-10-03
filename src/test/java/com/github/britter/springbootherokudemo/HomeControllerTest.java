@@ -15,13 +15,22 @@
  */
 package com.github.britter.springbootherokudemo;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.MapBindingResult;
+import org.springframework.validation.ObjectError;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -30,63 +39,51 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.MapBindingResult;
-import org.springframework.validation.ObjectError;
-
-@RunWith(HierarchicalContextRunner.class)
-public class HomeControllerTest {
+class HomeControllerTest {
 
     private ModelMap map;
     private HomeController ctrl;
     private RecordRepository repository;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         map = new ModelMap();
         repository = mock(RecordRepository.class);
         ctrl = new HomeController(repository);
     }
 
-    public class Home {
+    @Nested
+    class Home {
 
         @Test
-        public void shouldAddInsertRecordToModelMap() throws Exception {
+        void shouldAddInsertRecordToModelMap() {
             ctrl.home(map);
 
-            assertThat(map, hasKey("insertRecord"));
-            assertTrue(map.get("insertRecord") instanceof Record);
+            assertThat(map).containsKey("insertRecord");
+            assertThat(map.get("insertRecord")).isInstanceOf(Record.class);
 
             Record insertRecord = (Record) map.get("insertRecord");
-            assertNull(insertRecord.getData());
+            assertThat(insertRecord.getData()).isNull();
         }
 
         @Test
-        public void shouldQueryRepositoryForAllRecords() throws Exception {
+        public void shouldQueryRepositoryForAllRecords() {
             ctrl.home(map);
 
             verify(repository, only()).findAll();
         }
 
         @Test
-        public void shouldAddRecordsFromRepositoryToModelMap() throws Exception {
+        public void shouldAddRecordsFromRepositoryToModelMap() {
             when(repository.findAll()).thenReturn(Arrays.asList(new Record(), new Record(), new Record()));
 
             ctrl.home(map);
 
-            assertThat(map, hasKey("records"));
-            assertTrue(map.get("records") instanceof List);
+            assertThat(map).containsKey("records");
+            assertThat(map.get("records")).isInstanceOf(List.class);
 
             List<Record> records = getRecords();
-            assertThat(records, hasSize(3));
+            assertThat(records).hasSize(3);
         }
 
         @SuppressWarnings("unchecked")
@@ -95,17 +92,18 @@ public class HomeControllerTest {
         }
     }
 
-    public class InsertData {
+    @Nested
+    class InsertData {
 
         private MapBindingResult bindingResult;
 
-        @Before
-        public void setUp() throws Exception {
+        @BeforeEach
+        public void setUp() {
             bindingResult = new MapBindingResult(new HashMap<>(), "insertRecord");
         }
 
         @Test
-        public void shouldSaveRecordWhenThereAreNoErrors() throws Exception {
+        public void shouldSaveRecordWhenThereAreNoErrors() {
             Record record = new Record();
             insertData(record);
 
@@ -113,7 +111,7 @@ public class HomeControllerTest {
         }
 
         @Test
-        public void shouldNotSaveRecordWhenThereAreErrors() throws Exception {
+        public void shouldNotSaveRecordWhenThereAreErrors() {
             bindingResult.addError(new ObjectError("", ""));
 
             insertData(new Record());
@@ -122,19 +120,19 @@ public class HomeControllerTest {
         }
 
         @Test
-        public void shouldAddNewInsertRecordToModelMap() throws Exception {
+        public void shouldAddNewInsertRecordToModelMap() {
             Record record = new Record();
             insertData(record);
 
-            assertThat(map, hasKey("insertRecord"));
-            assertThat(map.get("insertRecord"), is(not(record)));
+            assertThat(map).containsKey("insertRecord");
+            assertThat(map.get("insertRecord")).isNotSameAs(record);
         }
 
         @Test
-        public void shouldAddRecordsToModelMap() throws Exception {
+        public void shouldAddRecordsToModelMap() {
             insertData(new Record());
 
-            assertThat(map, hasKey("records"));
+            assertThat(map).containsKey("records");
         }
 
         private void insertData(Record record) {
