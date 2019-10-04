@@ -1,10 +1,12 @@
 plugins {
+    id("com.gradle.build-scan") version "2.4.2"
     java
     jacoco
     id("org.springframework.boot") version "2.1.8.RELEASE"
     id("com.github.kt3k.coveralls") version "2.8.4"
 }
 apply(from = "gradle/git-version-data.gradle")
+apply(from = "gradle/build-scan-data.gradle")
 
 group = "com.github.britter"
 version = "0.2.8"
@@ -65,4 +67,11 @@ tasks {
     bootJar {
         archiveFileName.set("app.jar")
     }
+}
+
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+
+    publishAlways()
 }

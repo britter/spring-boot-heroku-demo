@@ -1,0 +1,293 @@
+/**
+ * This Gradle script captures data about the OS, IDE, CI, and Git and stores it in build scans via custom tags, custom links, and custom values.
+ *
+ * Proceed as following to benefit from this script in your Gradle build:
+ *
+ * - Copy this script to the root folder of your Gradle project, renaming it to 'build-scan-user-data.gradle'
+ * - Apply the Gradle Build Scan plugin
+ * - Point to your Gradle Enterprise server
+ * - Include this script in the root project's build.gradle(.kts) file via `apply from: 'build-scan-user-data.gradle'`
+ * - Further customize this script to your needs
+ */
+
+tagOs()
+tagIde()
+tagEnvironmentTag()
+addCiMetadata()
+addGitMetadata()
+addTestParallelization()
+
+void tagOs() {
+    buildScan.tag System.getProperty('os.name')
+}
+
+void tagIde() {
+    if (project.hasProperty('android.injected.invoked.from.ide')) {
+        buildScan.tag 'Android Studio'
+    } else if (System.getProperty('idea.version')) {
+        buildScan.tag 'IntelliJ IDEA'
+    } else if (System.getProperty('eclipse.buildId')) {
+        buildScan.tag 'Eclipse'
+    }
+}
+
+void tagEnvironmentTag() {
+    if (isCi()) {
+        buildScan.tag('CI')
+    } else if (isDeployment()) {
+        buildScan.tag('DEPLOYMENT')
+    } else {
+        buildScan.tag('LOCAL')
+    }
+}
+
+void addCiMetadata() {
+    if (isJenkins()) {
+        if (System.getenv('BUILD_URL')) {
+            buildScan.link 'Jenkins build', System.getenv('BUILD_URL')
+        }
+        if (System.getenv('BUILD_NUMBER')) {
+            buildScan.value 'CI build number', System.getenv('BUILD_NUMBER')
+        }
+        if (System.getenv('NODE_NAME')) {
+            def agentName = System.getenv('NODE_NAME') == 'master' ? 'master-node' : System.getenv('NODE_NAME')
+            buildScan.tag agentName
+            buildScan.value 'CI node name', agentName
+        }
+        if (System.getenv('JOB_NAME')) {
+            def jobNameLabel = 'CI job'
+            def jobName = System.getenv('JOB_NAME')
+            buildScan.value jobNameLabel, jobName
+            addCustomValueSearchLink 'CI job build scans', [(jobNameLabel): jobName]
+        }
+        if (System.getenv('STAGE_NAME')) {
+            def stageNameLabel = 'CI stage'
+            def stageName = System.getenv('STAGE_NAME')
+            buildScan.value stageNameLabel, stageName
+            addCustomValueSearchLink 'CI stage build scans', [(stageNameLabel): stageName]
+        }
+    }
+
+    if (isTeamCity()) {
+        if (System.getenv('SERVER_URL') && project.hasProperty('teamcity.agent.dotnet.build_id')) {
+            def teamCityServerUrl = System.getenv('SERVER_URL')
+            def teamCityBuildId = project.property('teamcity.agent.dotnet.build_id')
+            buildScan.link 'TeamCity build', "${appendIfMissing(teamCityServerUrl, "/")}viewLog.html?buildId=${teamCityBuildId}"
+        }
+        if (System.getenv('BUILD_NUMBER')) {
+            buildScan.value 'CI build number', System.getenv('BUILD_NUMBER')
+        }
+        if (project.hasProperty('agent.name')) {
+            def agentName = project.property('agent.name')
+            buildScan.tag agentName
+            buildScan.value 'CI agent name', agentName
+        }
+    }
+
+    if (isCircleCI()) {
+        if (System.getenv('CIRCLE_BUILD_URL')) {
+            buildScan.link 'CircleCI build', System.getenv('CIRCLE_BUILD_URL')
+        }
+        if (System.getenv('CIRCLE_BUILD_NUM')) {
+            buildScan.value 'CI build number', System.getenv('CIRCLE_BUILD_NUM')
+        }
+        if (System.getenv('CIRCLE_JOB')) {
+            def jobLabel = 'CI job'
+            def job = System.getenv('CIRCLE_JOB')
+            buildScan.value jobLabel, job
+            addCustomValueSearchLink 'CI job build scans', [(jobLabel): job]
+        }
+        if (System.getenv('CIRCLE_WORKFLOW_ID')) {
+            def workflowIdLabel = 'CI workflow'
+            def workflowId = System.getenv('CIRCLE_WORKFLOW_ID')
+            buildScan.value workflowIdLabel, workflowId
+            addCustomValueSearchLink 'CI workflow build scans', [(workflowIdLabel): workflowId]
+        }
+    }
+
+    if (isBamboo()) {
+        if (System.getenv('bamboo_resultsUrl')) {
+            buildScan.link 'Bamboo build', System.getenv('bamboo_resultsUrl')
+        }
+        if (System.getenv('bamboo_buildNumber')) {
+            buildScan.value 'CI build number', System.getenv('bamboo_buildNumber')
+        }
+        if (System.getenv('bamboo_planName')) {
+            def planNameLabel = 'CI plan'
+            def planName = System.getenv('bamboo_planName')
+            buildScan.value planNameLabel, planName
+            addCustomValueSearchLink 'CI plan build scans', [(planNameLabel): planName]
+        }
+        if (System.getenv('bamboo_buildPlanName')) {
+            def jobNameLabel = 'CI job'
+            def jobName = System.getenv('bamboo_buildPlanName')
+            buildScan.value jobNameLabel, jobName
+            addCustomValueSearchLink 'CI job build scans', [(jobNameLabel): jobName]
+        }
+        if (System.getenv('bamboo_agentId')) {
+            def agentId = System.getenv('bamboo_agentId')
+            buildScan.tag agentId
+            buildScan.value 'CI agent ID', agentId
+        }
+    }
+
+    if (isTravis()) {
+        if (System.getenv('TRAVIS_JOB_WEB_URL')) {
+            buildScan.link 'Travis build', System.getenv('TRAVIS_JOB_WEB_URL')
+        }
+        if (System.getenv("TRAVIS_BUILD_WEB_URL")) {
+            buildScan.link "Travis build log", System.getenv("TRAVIS_BUILD_WEB_URL")
+        }
+        if (System.getenv("TRAVIS_BUILD_NUMBER")) {
+            buildScan.value "Travis build number", System.getenv("TRAVIS_BUILD_NUMBER")
+        }
+        if (System.getenv("TRAVIS_JOB_NUMBER")) {
+            buildScan.value 'Travis job number', System.getenv('TRAVIS_JOB_NUMBER')
+        }
+        if (System.getenv("TRAVIS_JOB_NAME")) {
+            def jobLabel = 'Travis job'
+            def job = System.getenv('TRAVIS_JOB_NAME')
+            buildScan.value jobLabel, job
+            addCustomValueSearchLink 'Travis job build scans', [(jobLabel): job]
+        }
+        if (System.getenv("TRAVIS_PULL_REQUEST_BRANCH")) {
+            buildScan.tag "PR"
+            def prBranchLabel = "PR Branch"
+            def prBranch = System.getenv("TRAVIS_PULL_REQUEST_BRANCH")
+            buildScan.value prBranchLabel, prBranch
+            addCustomValueSearchLink 'PR branch build scans', [(prBranchLabel): prBranch]
+        }
+        if (System.getenv("TRAVIS_BUILD_STAGE_NAME")) {
+            def stageLabel = "Travis build stage"
+            def stage = System.getenv("TRAVIS_BUILD_STAGE_NAME")
+            buildScan.value stageLabel, stage
+            addCustomValueSearchLink 'Travis build stage build scans', [(stageLabel): stage]
+        }
+        if (System.getenv("TRAVIS_EVENT_TYPE")) {
+            def triggerLabel = "Travis build trigger"
+            def trigger = System.getenv("TRAVIS_EVENT_TYPE")
+            buildScan.value triggerLabel, trigger
+            addCustomValueSearchLink 'Travis trigger build scans', [(triggerLabel): trigger]
+        }
+    }
+
+    if (isHeroku()) {
+        if(System.getenv("STACK")) {
+            def stackLabel = "Heroku stack"
+            def stack = System.getenv("STACK")
+            buildScan.value stackLabel, stack
+            addCustomValueSearchLink 'Heroku stack build scans', [(stackLabel): stack]
+        }
+    }
+}
+
+void addGitMetadata() {
+    buildScan.background {
+        if (isGitInstalled() && !isHeroku()) {
+            def gitCommitId = execAndGetStdout('git', 'rev-parse', '--short=8', '--verify', 'HEAD')
+            def gitBranchName = execAndGetStdout('git', 'rev-parse', '--abbrev-ref', 'HEAD')
+            def gitStatus = execAndGetStdout('git', 'status', '--porcelain')
+
+            if (gitCommitId) {
+                def commitIdLabel = 'Git commit id'
+                value commitIdLabel, gitCommitId
+                addCustomValueSearchLink 'Git commit id build scans', [(commitIdLabel): gitCommitId]
+                def originUrl = execAndGetStdout('git', 'config', '--get', 'remote.origin.url')
+                if (originUrl.contains('github.com')) { // only for GitHub
+                    link 'Github Source', "https://github.com/britter/spring-boot-heroku-demo/tree/" + gitCommitId
+                }
+            }
+            if (gitBranchName) {
+                tag gitBranchName
+                value 'Git branch', gitBranchName
+            }
+            if (gitStatus) {
+                tag 'Dirty'
+                value 'Git status', gitStatus
+            }
+        }
+        if (isHeroku()) {
+            def commitIdLabel = 'Git commit id'
+            def gitCommitId = System.getenv("SOURCE_VERSION")
+            value commitIdLabel, gitCommitId
+            addCustomValueSearchLink 'Git commit id build scans', [(commitIdLabel): gitCommitId]
+            link 'Github Source', "https://github.com/britter/spring-boot-heroku-demo/tree/" + gitCommitId
+        }
+    }
+}
+
+void addTestParallelization() {
+    allprojects { p ->
+        p.tasks.withType(Test).configureEach { t -> doFirst { buildScan.value "[${t.identityPath}]#maxParallelForks", t.maxParallelForks.toString() } }
+    }
+}
+
+static boolean isCi() {
+    isJenkins() || isTeamCity() || isCircleCI() || isBamboo() || isTravis()
+}
+
+static boolean isDeployment() {
+    isHeroku()
+}
+
+static boolean isJenkins() {
+    System.getenv('JENKINS_URL')
+}
+
+static boolean isTeamCity() {
+    System.getenv('TEAMCITY_VERSION')
+}
+
+static boolean isCircleCI() {
+    System.getenv('CIRCLECI')
+}
+
+static boolean isBamboo() {
+    System.getenv('bamboo_resultsUrl')
+}
+
+static boolean isTravis() {
+    System.getenv("TRAVIS")
+}
+
+static boolean isHeroku() {
+    System.getenv('SOURCE_VERSION')
+}
+
+String execAndGetStdout(String... args) {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine(args)
+        standardOutput = stdout
+    }
+    stdout.toString().trim()
+}
+
+void addCustomValueSearchLink(String title, Map<String, String> search) {
+    if (buildScan.server) {
+        buildScan.link title, customValueSearchUrl(search)
+    }
+}
+
+String customValueSearchUrl(Map<String, String> search) {
+    def query = search.collect { name, value ->
+        "search.names=${encodeURL(name)}&search.values=${encodeURL(value)}"
+    }.join('&')
+    "${appendIfMissing(buildScan.server, "/")}scans?$query"
+}
+
+static String encodeURL(String url) {
+    URLEncoder.encode(url, 'UTF-8')
+}
+
+static String appendIfMissing(String str, String suffix) {
+    str.endsWith(suffix) ? str : str + suffix
+}
+
+static boolean isGitInstalled() {
+    try {
+        "git --version".execute().waitFor() == 0
+    } catch (IOException ignored) {
+        false
+    }
+}
