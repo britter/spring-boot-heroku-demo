@@ -21,12 +21,11 @@ After starting the application, point your browser to http://localhost:8080.
 
 ## Using a Postgres database for persistence
 
-For running the application using a real [Postgres](http://www.postgresql.org/) database, uncomment all property
-definitions in the `application.properties` file and put the configuration for your Postgres instance there.
-You can also use [Docker](http://docker.com) for starting a Postgres database. Just run the `docker-postgres.sh` script
-and it will create a Postgres container for you. When using docker, all you have to change in the
-`application.properties` file is `spring.datasource.url`. For boot2docker users, the host name should already be
-correct. For Linux users it has to be changed to localhost.
+For running the application using a real [Postgres](http://www.postgresql.org/) database, the `postgres` application
+profile defined by the `application-postgres.properties` file can be used. You can either change the file to point to
+your pre existing Postgres instance or use a [Docker](http://docker.com) Postgres container.
+To start Postgres in Docker just run `./gradlew dockerRun` and it will create a Postgres container for you.
+After that you can start the application with `postgres` profile by running `./gradlew bootRun -Ppostgres`
 
 ## License
 

@@ -4,6 +4,7 @@ plugins {
     jacoco
     id("org.springframework.boot") version "2.1.8.RELEASE"
     id("com.github.kt3k.coveralls") version "2.8.4"
+    id("com.palantir.docker-run") version "0.22.1"
 }
 apply(from = "gradle/git-version-data.gradle")
 apply(from = "gradle/build-scan-data.gradle")
@@ -67,6 +68,22 @@ tasks {
     bootJar {
         archiveFileName.set("app.jar")
     }
+
+    bootRun {
+        if (project.hasProperty("postgres")) {
+            setArgsString("--spring.profiles.active=postgres")
+        }
+    }
+}
+
+dockerRun {
+    image = "postgres:9.4.4"
+    name = "postgres-db"
+    ports("5432:5432")
+    env(mapOf(
+        "POSTGRES_PASSWORD" to "spring-boot-heroku-example",
+        "POSTGRES_USER" to "spring-boot-heroku-example"
+    ))
 }
 
 buildScan {
