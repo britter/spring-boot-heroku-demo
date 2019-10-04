@@ -5,7 +5,6 @@ plugins {
     id("org.springframework.boot") version "2.1.8.RELEASE"
     id("com.github.kt3k.coveralls") version "2.8.4"
     id("com.palantir.docker-run") version "0.22.1"
-    id("org.nosphere.gradle.github.actions") version "1.0.0"
 }
 apply(from = "gradle/git-version-data.gradle")
 apply(from = "gradle/build-scan-data.gradle")
