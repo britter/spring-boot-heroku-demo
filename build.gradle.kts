@@ -27,7 +27,7 @@ apply(from = "gradle/git-version-data.gradle")
 apply(from = "gradle/build-scan-data.gradle")
 
 group = "com.github.britter"
-version = "0.2.8"
+version = "0.2.9"
 
 repositories {
     mavenCentral()
