@@ -5,6 +5,8 @@ plugins {
     id("org.springframework.boot") version "2.1.8.RELEASE"
     id("com.github.kt3k.coveralls") version "2.8.4"
     id("com.palantir.docker-run") version "0.22.1"
+    kotlin("jvm") version "1.3.50"
+    kotlin("plugin.spring") version "1.3.50"
 }
 apply(from = "gradle/git-version-data.gradle")
 apply(from = "gradle/build-scan-data.gradle")
@@ -17,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
     implementation(platform("org.springframework.boot:spring-boot-dependencies:2.1.8.RELEASE"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -31,8 +36,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
     testImplementation("org.assertj:assertj-core:3.13.2")
-    testImplementation("org.mockito:mockito-core:3.1.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:3.1.0")
+    testImplementation("io.mockk:mockk:1.9")
 }
 
 java {
@@ -49,6 +53,13 @@ tasks {
 
     compileJava {
         options.encoding = "UTF-8"
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "11"
+        }
     }
 
     test {

@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.britter.springbootherokudemo;
+package com.github.britter.springbootherokudemo
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
 @SpringBootApplication
-public class Application {
+class Application
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-
+fun main(args: Array<String>) {
+    runApplication<Application>(*args)
 }
+
